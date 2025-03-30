@@ -1,0 +1,369 @@
+<html>
+<head>
+  <title>Mortgage Payment and Advice</title>
+  <!-- CSS Code -->
+  <style>
+    body {
+      background-color: #fffde7;
+      color: #333;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 1rem 0;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #4CAF50;
+    }
+
+    ul {
+      padding: 0;
+    }
+
+    li {
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .button-container {
+    display: flex;
+    justify-content: center;
+    bottom: 20px;
+    width: 100%;
+  }
+
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+
+
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mortgage Analysation</h1>
+  </header>
+  <!-- Display Data -->
+  <div class='container'>
+    <div id="resultImage" style="text-align: center; margin: 20px 0;"></div>
+    <h2 id="MortgageHeading"></h2>
+    <ul id='mortgageDetails'></ul>
+    <h2 id="AdviceHeading"></h2>
+    <ul id='adviceDetails'></ul>
+    <h2 id="DetailsHeading"></h2>
+    <ul id='Details'></ul>
+    </ul>
+    <h3><b>If you have any further questions consult a mortgage broker</b></h3>
+  </div>
+  <!-- Javascript Code -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // Define Variables
+      let name = localStorage.getItem('name');
+      let income = Number(localStorage.getItem('Income'));
+      let locations = JSON.parse(localStorage.getItem('Location'));
+      let flexibility = localStorage.getItem('Flexibility') || 'Not specified';
+      let year = Number(localStorage.getItem('Year'));
+      let downPayment = Number(localStorage.getItem('DownPayment'));
+      let mortgageLength = Number(localStorage.getItem('Mortgage'));
+      let max = Number(localStorage.getItem('max'))
+
+      let prices2016 = {
+        'National': 313483,
+        'Dublin': 397676,
+        'Cork': 293343,
+        'Galway': 262215,
+        'Limerick': 239024,
+        'Waterford': 239409,
+        'Other Areas': 272290,
+      };
+      let inflation = {
+        'National': 8162.578275666486, 
+        'Dublin': 10717.627420792493, 
+        'Cork': 7750.354805147016, 
+        'Galway': 7164.899239839767, 
+        'Limerick': 6378.660820706135, 
+        'Waterford': 6225.691881310663, 
+        'Other Areas': 6810.629148373824
+      };
+      
+      let totalPrice = 0;
+      if (locations.length > 0) {
+        for (let i = 0; i < locations.length; i++) {
+          totalPrice += prices2016[locations[i]];
+    }
+    housePrice = totalPrice / locations.length;
+  } 
+
+    let totalInflation = 0;
+    if (locations.length > 0) {
+      for (let i = 0; i < locations.length; i++) {
+        totalInflation += inflation[locations[i]];
+    }
+    averageInflation = totalInflation / locations.length;
+  } 
+
+
+  let yearsElapsed = year - 2016;
+  let adjustedHousePrice = housePrice + (averageInflation * yearsElapsed);
+  
+  let loanAmount = adjustedHousePrice - downPayment;
+
+  let annualInterestRate = 0.04; 
+  let monthlyInterestRate = annualInterestRate / 12;
+  let numberOfPayments = mortgageLength * 12;
+  //Calculate Monthly Payment
+  let monthlyPayment = (
+    loanAmount *
+    (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
+    (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1)
+  ).toFixed(2);
+  //Calculate Cheaper Areas
+  let cheaperOptions = [];
+  
+  if (flexibility === 'Yes') {
+    const allLocations = Object.keys(prices2016);
+    for (let possibleLocation of allLocations) {
+      if (locations.includes(possibleLocation)) {
+        continue;
+          }
+    
+        for (let selectedLocation of locations) {
+          if (prices2016[possibleLocation] < prices2016[selectedLocation]) {
+            cheaperOptions.push(possibleLocation);
+            break; 
+          }
+        }
+      }
+  
+  cheaperOptions = [...new Set(cheaperOptions)];
+  }
+
+    let adviceDetails = {};
+      //Tests whether its within budget
+      if(monthlyPayment > max) {
+        BudgetDecision = 'The monthly payment is above your maximum budget for monthly payment';
+        Budget2 = "No"; 
+      } else if(monthlyPayment < max) {
+        BudgetDecision = 'The monthly payment is within your budget';
+        Budget2 = "Yes"; 
+      }
+      //Tests whether will be accepted by bank
+      if((income/12) * .5 < monthlyPayment) {
+        Approval = 'The Bank would not approve this mortgage, as the monthly payment takes up too high a percentage of your income';
+        approval = "No"; 
+      } else {
+        Approval = 'The Bank would approve this mortgage';
+        approval = "Yes"; 
+      }
+      //Changes Heading Based On Approval and Budget
+      if (Budget2 === "Yes" && approval === "Yes") {
+        document.getElementById("MortgageHeading").textContent = "Successful Mortgage Details:";
+        document.getElementById("DetailsHeading").textContent = "Summary of Your Details:";
+      }
+      if (Budget2 === "No" && approval === "No") {
+        document.getElementById("MortgageHeading").textContent = "Unsuccessful Mortgage Details:";
+        document.getElementById("AdviceHeading").textContent = "See Recommendations Below to Lower Your Monthly Payment:";
+        document.getElementById("DetailsHeading").textContent = "Summary of Your Details:";
+        adviceDetails['Down Payment'] = 'Increasing Your Down Payment Would Lower Your Monthly Payment';
+        adviceDetails['Mortgage Length'] = 'Increasing the length of your mortgage would lower your monthly payment, however you would pay more interest overall';
+        if (cheaperOptions.length > 0) {
+      	  adviceDetails['Location'] = locations.join(' and ') + " can be very expensive. Consider these cheaper locations: " + cheaperOptions.join(', ');
+      } else if (flexibility === 'Yes') {
+          adviceDetails['Location'] = "You are open to moving, but no significantly cheaper locations were found.";
+        }
+
+      }
+      if (Budget2 === "No" && approval === "Yes") {
+        document.getElementById("MortgageHeading").textContent = "Unsuccessful Mortgage Details:";
+        document.getElementById("AdviceHeading").textContent = "See Recommendations Below to Lower Your Monthly Payment:";
+        document.getElementById("DetailsHeading").textContent = "Summary of Your Details:";
+        adviceDetails['Down Payment'] = 'Increasing your down payment would lower your monthly payment, which would help fit within your budget'
+        adviceDetails['Mortgage Length'] = 'Increasing the length of your mortgage would lower your monthly payment, however you would pay more interest overall'
+        if (cheaperOptions.length > 0) {
+          adviceDetails['Location'] = locations.join(' and ') + " can be very expensive. Consider these cheaper locations: " + cheaperOptions.join(', ');
+      } else if (flexibility === 'Yes') {
+          adviceDetails['Location'] = "You are open to moving, but no significantly cheaper locations were found.";
+        }
+      }
+      if (Budget2 === "Yes" && approval === "No") {
+        document.getElementById("MortgageHeading").textContent = "Unsuccessful Mortgage Details:";
+        document.getElementById("AdviceHeading").textContent = "See Recommendations Below to Lower Your Monthly Payment:";
+        document.getElementById("DetailsHeading").textContent = "Summary of Your Details:";
+        adviceDetails['Down Payment'] = 'Increasing Your Down Payment Would Lower Your Monthly Payment'
+        adviceDetails['Mortgage Length'] = 'Increasing the length of your mortgage would lower your monthly payment, however you would pay more interest overall'
+        if (cheaperOptions.length > 0) {
+          adviceDetails['Location'] = locations.join(' and ') + " can be very expensive. Consider these cheaper locations: " + cheaperOptions.join(', ');
+        } else if (flexibility === 'Yes') {
+          adviceDetails['Location'] = "You are open to moving, but no significantly cheaper locations were found.";
+        }
+      }
+
+      // Form Lists to Display
+      let Details = {
+        'Name': name,
+        'Annual Income (Net)': '€' + income,
+        'Preferred Locations': locations.join(', '),
+        'Willing to Move': flexibility,
+        'Year Planning to Buy': year,
+        'Down Payment': '€' + downPayment,
+        'Monthly Payment Budget': '€' + max,
+      };
+
+      let mortgageDetails = {
+        'Budget': BudgetDecision,
+        'Mortgage Approval': Approval,
+        'Estimated Monthly Payment': '€' + monthlyPayment,
+        'Mortgage Length': mortgageLength + ' Years',
+        'House Price (Estimated)': '€' + Math.round(adjustedHousePrice),
+        'Total Loan Amount': '€' + Math.round(loanAmount)
+      }
+
+      // Send the Data to the Flask Back-End
+    fetch('http://localhost:5000/form', {
+        method: 'POST',
+        headers: {
+           'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: localStorage.getItem('name'),
+          income: Number(localStorage.getItem('Income')),
+          locations: JSON.parse(localStorage.getItem('Location')).join(', '),
+          flexibility: localStorage.getItem('Flexibility'),
+          year: Number(localStorage.getItem('Year')),
+          downPayment: Number(localStorage.getItem('DownPayment')),
+          mortgageLength: Number(localStorage.getItem('Mortgage')),
+          monthlyPayment: monthlyPayment,
+          approval: approval,
+          Budget2: Budget2
+        })
+    })
+
+
+      //Puts GIF at top of the page
+      if (Budget2 === "Yes" && approval === "Yes") {
+        let imgElement = document.createElement('img');
+        imgElement.src = "Images/green-tick.gif";
+        imgElement.style.width = "200px"
+        document.getElementById('resultImage').appendChild(imgElement );
+        let paragraph = document.createElement('p');
+        paragraph.style.color = 'green';
+        paragraph.style.fontWeight = 'bold';
+        paragraph.style.fontSize = '2rem'
+        paragraph.textContent = 'Congratulations! This mortgage would be accepted and is within your budget!';
+        document.getElementById('resultImage').appendChild(paragraph);
+      }
+
+      if (Budget2 === "No" && approval === "No") {
+        document.getElementById('resultImage').innerHTML = '';
+    
+    
+        let imgElement = document.createElement('img');
+        imgElement.src = "Images/source.gif";
+        imgElement.style.width = "200px";
+        document.getElementById('resultImage').appendChild(imgElement);
+    
+        let paragraph = document.createElement('p');
+        paragraph.style.color = 'red';
+        paragraph.style.fontWeight = 'bold';
+        paragraph.style.fontSize = '2rem'
+        paragraph.textContent = 'Unfortunately this mortgage would be rejected by the bank and is outside your budget.';
+        document.getElementById('resultImage').appendChild(paragraph);
+      }
+
+      if (Budget2 == "No" && approval == "Yes"){
+        document.getElementById('resultImage').innerHTML = '';
+        
+        let imgElement = document.createElement('img');
+        imgElement.src = "Images/Exclamation.gif";
+        imgElement.style.width = "200px";
+        document.getElementById('resultImage').appendChild(imgElement);
+    
+        let paragraph = document.createElement('p');
+        paragraph.style.color = 'orange';
+        paragraph.style.fontWeight = 'bold';
+        paragraph.style.fontSize = '2rem'
+        paragraph.textContent = 'Unfortunately, this mortgage is outside of your budget.';
+        document.getElementById('resultImage').appendChild(paragraph);
+      }
+
+      if (Budget2 == "Yes" && approval == "No"){
+        document.getElementById('resultImage').innerHTML = '';
+        
+        let imgElement = document.createElement('img');
+        imgElement.src = "Images/Exclamation.gif";
+        imgElement.style.width = "200px";
+        document.getElementById('resultImage').appendChild(imgElement);
+    
+        let paragraph = document.createElement('p');
+        paragraph.style.color = 'orange';
+        paragraph.style.fontWeight = 'bold';
+        paragraph.style.fontSize = '2rem'
+        paragraph.textContent = 'Unfortunately, this mortgage would be rejected by the bank.';
+        document.getElementById('resultImage').appendChild(paragraph);
+      }
+
+      for (let [key, value] of Object.entries(mortgageDetails)) {
+        let li = document.createElement('li');
+        li.innerHTML = '<strong>' + key + ':</strong> <span>' + value + '</span>';
+        document.getElementById('mortgageDetails').appendChild(li); 
+      }
+
+      for (let [key, value] of Object.entries(adviceDetails)) {
+        let li = document.createElement('li');
+        li.innerHTML = '<strong>' + key + ':</strong> <span>' + value + '</span>';
+        document.getElementById('adviceDetails').appendChild(li); 
+      }
+
+      for (let [key, value] of Object.entries(Details)) {
+        let li = document.createElement('li');
+        li.innerHTML = '<strong>' + key + ':</strong> <span>' + value + '</span>';
+        document.getElementById('Details').appendChild(li);   
+      }
+    });
+
+
+    // Buttons and Their Functions
+    function clearAndReturn() {
+      localStorage.clear();
+        window.location.href = "interactive.html";
+    }
+    function viewDatabase() {
+      window.location.href = "http://localhost:5000/view_db";
+  } 
+  </script>
+
+  <div class='button-container'>
+    <button onclick="clearAndReturn()">Enter a New Submission</button>
+    <button onclick="viewDatabase()">View Previous Submissions </button>
+  </div>
+</body>
+</html>

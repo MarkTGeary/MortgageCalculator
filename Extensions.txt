@@ -1,0 +1,7 @@
+List of Extensions:
+matplotlib
+pandas
+numpy
+flask
+flask_cors
+scikit-learn

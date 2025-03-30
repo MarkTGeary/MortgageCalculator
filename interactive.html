@@ -1,0 +1,176 @@
+<html>
+<head>
+  <title>Interactive Web-Page</title>
+  <!-- CSS Code -->
+  <style>
+    body {
+      background-color: #fffde7;
+      color: #333;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 1rem
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    input, label {
+      font-size: 1rem;
+    }
+
+    input[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    
+    button {
+      background-color: #4CAF50;
+      color:white;
+      width:400px;
+      height:30px;
+      align-items: center;
+      margin-left: 200px;
+    }
+
+    img {
+      width: 415px;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Mortgage Analyser</h1>
+  </header>
+  <div class="container">
+    <p><i>Welcome to Your Mortgage Calculator and Personalised Advice Center! On this page, you will be able to input 
+      your own custom details about where, when, and other details about buying a house in Ireland. Submit the form and 
+      you will be given details of what the average mortgage would be based on what you entered, and whether or not the mortgage 
+      would be viable for you. You will also be given advice on how to lower your monthly payment if this mortgage is not viable for you.</i>
+    </p>
+    <!--Display Graphs from other files-->
+    <button onclick="Toggle_Images()">Click Here To View Historical Data</button>
+    <div id="images" style="display: none;">
+      <img src="Images/HousingPriceGraph.png" style="width:370px">
+      <img src="Images/gnpGraph.png" style="width:370px">
+      <img src="Images/housing_correlations.png" style="width:370px;">
+      <img src="Images/house_price_forecast_2040.png" style="width:370px">
+    </div>
+    <script>
+
+      function Toggle_Images() {
+        imagesDiv = document.getElementById("images");
+        if (imagesDiv.style.display === "none") {
+            imagesDiv.style.display = "block";
+        } else {
+            imagesDiv.style.display = "none";
+        }
+    }
+    </script>
+    <!-- HTML Form Code -->
+    <form id="Form">
+      <h1 style="text-align: center;">Enter Your Details:</h1>
+
+      <h2><u>Personal:</u></h2>
+
+      <h3>Enter Your Name:</h3>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" autocomplete="off">
+
+      <h3>Enter Your Income:</h3>
+      <label for="Income">Annual Income (Net):</label>
+      <input type="number" id="Income" name="Income" required>
+
+      <h2><u>Location:</u></h2>
+
+      <h3>Enter Your Preferred Location:</h3>
+      <label><input type="checkbox" name="Location" value="National"> National</label>
+      <label><input type="checkbox" name="Location" value="Dublin"> Dublin</label>
+      <label><input type="checkbox" name="Location" value="Limerick"> Limerick</label>
+      <label><input type="checkbox" name="Location" value="Cork"> Cork</label>
+      <label><input type="checkbox" name="Location" value="Galway"> Galway</label>
+      <label><input type="checkbox" name="Location" value="Waterford"> Waterford</label>
+      <label><input type="checkbox" name="Location" value="Other Areas"> Other Areas</label>
+
+      <h3>Would You Be Willing to Move Away From Your Preferred Location?</h3>
+      <label><input type="radio" name="Flexibility" value="Yes"> Yes</label>
+      <label><input type="radio" name="Flexibility" value="No"> No</label>
+
+      <h2><u>Mortgage Details:</u></h2>
+
+      <h3>What Year Are You Planning to Buy The House?</h3>
+      <input type="number" name="Year" id="Year" min="2016" required>
+
+      <h3>What is Your Down-Payment?</h3>
+      <input type="number" name="DownPayment" id="DownPayment" required>
+
+      <h3>How Long Would You Like Your Mortgage to Be? (Min 5 Yrs - Max 30 Yrs)</h3>
+      <input type="number" name="Mortgage" id="Mortgage" min="5" max="30" required>
+
+      <h3>What Would Be Your Maximum Possible Monthly Payment?</h3>
+      <input type="number" name="max" id="max">
+
+      <input type="submit" value="Submit Data">
+    </form>
+  </div>
+  <!-- Javascript Code -->
+  <script>
+    document.getElementById("Form").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      // Define Variables
+      let name = document.getElementById("name").value;
+      let income = document.getElementById("Income").value;
+      let locationElements = document.getElementsByName("Location");
+      let locations = [];
+      locationElements.forEach(elem => {
+        if (elem.checked) locations.push(elem.value);
+      });
+      let flexibility = document.querySelector('input[name="Flexibility"]:checked')?.value;
+      let year = document.getElementById("Year").value;
+      let downPayment = document.getElementById("DownPayment").value;
+      let mortgageLength = document.getElementById("Mortgage").value;
+      let max = document.getElementById("max").value;
+      
+      // Store data in localStorage for later use
+      localStorage.setItem("name", name);
+      localStorage.setItem("Income", income);
+      localStorage.setItem("Location", JSON.stringify(locations));
+      localStorage.setItem("Flexibility", flexibility);
+      localStorage.setItem("Year", year);
+      localStorage.setItem("DownPayment", downPayment);
+      localStorage.setItem("Mortgage", mortgageLength);
+      localStorage.setItem("max", max);
+
+      let formData = new FormData(event.target);
+
+      window.location.href = "mortgageAdvice.html";
+    });
+  </script>
+ 
+</body>
+</html>

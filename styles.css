@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    margin-left: 200px; 
+    background: linear-gradient(to right, #e6f7ff, #ffffff);
+    color: #333;
+    line-height: 1.6;
+}
+
+h2{
+    text-align: center;
+    padding: 20px 0;
+    color: #0062cc;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #0062cc;
+}
+
+h1{
+    text-align: center;
+    padding: 20px 0;
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #0062cc;
+}
+
+h4, h5 {
+    margin-left: 30px;
+    padding-left: 10px;
+    color: #0062cc;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 180px;
+    height: 100%;
+    background-color: #0062cc;
+    padding: 25px 15px;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    overflow-y: auto;
+}
+.sidebar h3{
+    color:white;
+    margin-bottom: 20px;
+    margin-left: 5px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px 5px;
+    margin-bottom: 10px;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.sidebar a:hover {
+    background-color: #005a8c;
+    transform: translateX(5px);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+th {
+    background-color: #0062cc;
+    color: white;
+}
+
+video {
+    margin-left:200px;
+}
+section {
+    padding: 15px;
+    margin-bottom: 30px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+p {
+    padding: 10px 40px;
+    text-align: justify;
+}
+
+ul, ol {
+    margin-left: 60px;
+    margin-right: 20px;
+}
+
+li {
+    padding: 5px 0;
+}
+
+img {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 15px 0;
+    max-width: 100%;
+    height: auto;
+}
+
